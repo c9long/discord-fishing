@@ -4,7 +4,7 @@
 ; Auto /fish sender for AutoHotkey v2
 ; Toggle on/off with F8. Exit with Esc.
 
-interval := 3000 ; milliseconds
+interval := 3200 ; milliseconds
 running := false
 isBuying := false
 isFishing := false
@@ -75,31 +75,8 @@ F8:: {
     global running, interval, isBuying, isFishPaused
     running := !running
     if running {
-        BuyItems()
-        BuyWorker10()
         if not isFishPaused
             SetTimer(SendFish, interval)
-        SetTimer(BuyItems, 305000)
-        SetTimer(BuyWorker10, 605000)
-    } else {
-        StopAllTimers()
-    }
-
-    ToolTip running ? "Auto /fish: ON" : "Auto /fish: OFF"
-    ; hide tooltip after 1.2s
-    SetTimer(RemoveToolTip, 1200)
-}
-
-F9:: {
-    global running, interval, isBuying, isFishPaused
-    running := !running
-    if running {
-        BuyExpensiveItems()
-        BuyWorker30()
-        if not isFishPaused
-            SetTimer(SendFish, interval)
-        SetTimer(BuyExpensiveItems, 1205000)
-        SetTimer(BuyWorker30, 1805000)
     } else {
         StopAllTimers()
     }
