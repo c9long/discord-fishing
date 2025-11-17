@@ -86,13 +86,19 @@ F8:: {
     SetTimer(RemoveToolTip, 1200)
 }
 
-#HotIf WinActive("ahk_exe DiscordDevelopment.exe")
+IsInCorrectChannel() {
+    if not (WinExist("A") && (WinGetProcessName("A") == "DiscordDevelopment.exe"))
+        return false
+    currentTitle := WinGetTitle("A")
+    return InStr(currentTitle, serverName) and InStr(currentTitle, channelName)
+}
+
+#HotIf IsInCorrectChannel()
 
 =:: {
     global interval
     interval += 100
-    seconds := interval / 1000
-    ToolTip "Interval: " seconds " seconds"
+    ToolTip "Interval: " interval " milliseconds"
     SetTimer(RemoveToolTip, 1200)
 }
 
@@ -101,8 +107,7 @@ F8:: {
     interval -= 100
     if interval < 100
         interval := 100
-    seconds := interval / 1000
-    ToolTip "Interval: " seconds " seconds"
+    ToolTip "Interval: " interval " milliseconds"
     SetTimer(RemoveToolTip, 1200)
 }
 
