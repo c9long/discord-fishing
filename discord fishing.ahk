@@ -86,25 +86,27 @@ F8:: {
     SetTimer(RemoveToolTip, 1200)
 }
 
+#HotIf WinActive("ahk_exe DiscordDevelopment.exe")
+
 =:: {
-    if IsInCorrectChannel() {
-        global interval
-        interval += 100
-        ToolTip "Interval: " interval " milliseconds"
-        SetTimer(RemoveToolTip, 1200)
-    }
+    global interval
+    interval += 100
+    seconds := interval / 1000
+    ToolTip "Interval: " seconds " seconds"
+    SetTimer(RemoveToolTip, 1200)
 }
 
 -:: {
-    if IsInCorrectChannel() {
-        global interval
-        interval -= 100
-        if interval < 100
-            interval := 100
-        ToolTip "Interval: " interval " milliseconds"
-        SetTimer(RemoveToolTip, 1200)
-    }
+    global interval
+    interval -= 100
+    if interval < 100
+        interval := 100
+    seconds := interval / 1000
+    ToolTip "Interval: " seconds " seconds"
+    SetTimer(RemoveToolTip, 1200)
 }
+
+#HotIf
 
 SendFish(*) {
     global isBuying, isFishing, buyPending, pendingMode, isFishPaused
@@ -317,13 +319,6 @@ BuyWorker30(*) {
     Sleep 300
     if not wasOnDiscord
         SendInput "!{Tab}"
-}
-
-IsInCorrectChannel() {
-    if not (WinExist("A") && (WinGetProcessName("A") == "DiscordDevelopment.exe"))
-        return false
-    currentTitle := WinGetTitle("A")
-    return InStr(currentTitle, serverName) and InStr(currentTitle, channelName)
 }
 
 F1::ExitApp
