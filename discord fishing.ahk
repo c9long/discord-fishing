@@ -4,7 +4,7 @@
 ; Auto /fish sender for AutoHotkey v2
 ; Toggle on/off with F8. Exit with Esc.
 
-interval := 3200 ; milliseconds
+interval := 3300 ; milliseconds
 running := false
 isBuying := false
 isFishing := false
@@ -84,6 +84,26 @@ F8:: {
     ToolTip running ? "Auto /fish: ON" : "Auto /fish: OFF"
     ; hide tooltip after 1.2s
     SetTimer(RemoveToolTip, 1200)
+}
+
+=:: {
+    if IsInCorrectChannel() {
+        global interval
+        interval += 100
+        ToolTip "Interval: " interval " milliseconds"
+        SetTimer(RemoveToolTip, 1200)
+    }
+}
+
+-:: {
+    if IsInCorrectChannel() {
+        global interval
+        interval -= 100
+        if interval < 100
+            interval := 100
+        ToolTip "Interval: " interval " milliseconds"
+        SetTimer(RemoveToolTip, 1200)
+    }
 }
 
 SendFish(*) {
@@ -268,6 +288,7 @@ BuyWorker10(*) {
     SendInput "{Enter}"
     Sleep 300
     SendInput "{Enter}"
+    Sleep 300
     if not wasOnDiscord
         SendInput "!{Tab}"
 }
@@ -293,8 +314,16 @@ BuyWorker30(*) {
     SendInput "{Enter}"
     Sleep 300
     SendInput "{Enter}"
+    Sleep 300
     if not wasOnDiscord
         SendInput "!{Tab}"
+}
+
+IsInCorrectChannel() {
+    if not (WinExist("A") && (WinGetProcessName("A") == "DiscordDevelopment.exe"))
+        return false
+    currentTitle := WinGetTitle("A")
+    return InStr(currentTitle, serverName) and InStr(currentTitle, channelName)
 }
 
 F1::ExitApp
