@@ -90,7 +90,7 @@ IsInCorrectChannel() {
     if not (WinExist("A") && (WinGetProcessName("A") == "DiscordDevelopment.exe"))
         return false
     currentTitle := WinGetTitle("A")
-    return InStr(currentTitle, serverName) and InStr(currentTitle, channelName)
+    return currentTitle == "#" channelName " | " serverName " - Discord"
 }
 
 #HotIf IsInCorrectChannel()
@@ -202,7 +202,7 @@ SwitchToChannel(*) {
     WinActivate "ahk_exe DiscordDevelopment.exe"
     Sleep 500
     currentTitle := WinGetTitle("A")
-    if not (InStr(currentTitle, serverName) and InStr(currentTitle, channelName)) {
+    if currentTitle != "#" channelName " | " serverName " - Discord" {
         SendInput "^k"
         Sleep 300
         SendInput serverName " " channelName
