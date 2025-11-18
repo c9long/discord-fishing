@@ -44,3 +44,5 @@ An AutoHotkey v2 script for automating the `/fish` command in Discord, with feat
 
 ## Disclaimer
 Use responsibly. Automating Discord commands may violate server rules—check with your community. This script is for educational purposes.
+
+This script was written for the Virtual Fisher Discord application, which implements its own human verification Captcha. The script does not and will not attempt to automate the verification and it is the responsibility of the user to pause and verify accordingly.
