@@ -13,13 +13,15 @@ An AutoHotkey v2 script for automating the `/fish` command in Discord, with feat
 ## Installation
 1. Go to [Releases](https://github.com/c9long/discord-fishing/releases) and download the latest executable (version 1.0.2 or higher) from the assets.
 2. Run the downloaded `.exe` file.
-3. On first run, a GUI will appear to set your Discord server name and channel name (e.g., "Coruscant" and "bots"). These are saved in `config.ini`.
+3. On first run, a GUI will appear to set your Discord server name, channel name, and channel ID. These are saved in `config.ini`.
+   - To get the Channel ID: Enable Developer Mode in Discord (Settings > Advanced), right-click the channel, and select 'Copy ID'.
 
 ## Usage
 - Launch the script/exe.
-- In the GUI, enter your server and channel, then click "Run Script".
+- In the GUI, enter your server name, channel name, and channel ID, then click "Run Script".
 - Switch to Discord and ensure you're in the specified channel.
 - Use the hotkeys below to control the bot.
+- Press `Esc` anytime to open the settings GUI and update configurations.
 
 ## Keyboard Shortcuts
 
@@ -33,6 +35,7 @@ An AutoHotkey v2 script for automating the `/fish` command in Discord, with feat
 | `F8` | Toggle auto `/fish` on/off. Starts/stops the fishing loop. |
 | `=` | Increase fishing interval by 100ms (only works in the correct server/channel). Shows tooltip with new interval. |
 | `-` | Decrease fishing interval by 100ms (minimum 100ms; only works in the correct server/channel). Shows tooltip with new interval. |
+| `Esc` | Open the settings GUI to update server name, channel name, channel ID, and Discord executable. |
 | `F1` | Exit the script. |
 
 ## Notes
@@ -40,7 +43,7 @@ An AutoHotkey v2 script for automating the `/fish` command in Discord, with feat
 - Buying functions include loops to ensure you're in the correct channel before sending commands.
 - Tooltips provide feedback for actions.
 - Default interval: 3300ms (3.3 seconds). Adjustable with `=` and `-`.
-- Config is saved in `config.ini`; edit manually if needed.
+- Config is saved in `config.ini`; use the `Esc` key to open the settings GUI and update if needed, or exit and relaunch the script to trigger the initial GUI.
 
 ## Disclaimer
 Use responsibly. Automating Discord commands may violate server rules—check with your community. This script is for educational purposes.
