@@ -6,6 +6,7 @@
 
 serverName := IniRead("config.ini", "Settings", "server", "YourServerName")
 channelName := IniRead("config.ini", "Settings", "channel", "YourSpamChannelName")
+channelID := IniRead("config.ini", "Settings", "channelid", "YourChannelID")
 discordExe := IniRead("config.ini", "Settings", "exe", "Discord.exe")
 
 MyGui := Gui()
