@@ -10,11 +10,6 @@ An AutoHotkey v2 script for automating the `/fish` command in Discord, with feat
 - GUI for setting server and channel names on startup.
 - Compiled executable for easy sharing and use without AutoHotkey installed.
 
-## Requirements
-- Windows OS.
-- For running the script: AutoHotkey v2 (download from [autohotkey.com](https://www.autohotkey.com/)).
-- For compiling to exe: Use Ahk2Exe from AutoHotkey v2 installation.
-
 ## Installation
 1. Go to [Releases](https://github.com/c9long/discord-fishing/releases) and download the latest executable (version 1.0.2 or higher) from the assets.
 2. Run the downloaded `.exe` file.
