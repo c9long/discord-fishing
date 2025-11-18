@@ -6,23 +6,36 @@
 
 serverName := IniRead("config.ini", "Settings", "server", "Coruscant")
 channelName := IniRead("config.ini", "Settings", "channel", "bots")
+discordExe := IniRead("config.ini", "Settings", "exe", "Discord.exe")
 
 MyGui := Gui()
 MyGui.Add("Text",, "Server Name:")
 ServerEdit := MyGui.Add("Edit",, serverName)
 MyGui.Add("Text",, "Channel Name:")
 ChannelEdit := MyGui.Add("Edit",, channelName)
+MyGui.Add("Text",, "Discord Executable:")
+Radio1 := MyGui.Add("Radio", "vExeChoice", "Discord (x86 or x64)")
+Radio2 := MyGui.Add("Radio",, "Discord Development (ARM64)")
+if discordExe == "Discord.exe"
+    Radio1.Value := 1
+else
+    Radio2.Value := 1
 RunBtn := MyGui.Add("Button",, "Run Script")
 RunBtn.OnEvent("Click", (*) => RunScript())
 MyGui.Show()
 WinWaitClose("ahk_id " MyGui.Hwnd)
 
 RunScript() {
-    global serverName, channelName
+    global serverName, channelName, discordExe
     serverName := ServerEdit.Value
     channelName := ChannelEdit.Value
+    if Radio1.Value
+        discordExe := "Discord.exe"
+    else
+        discordExe := "DiscordDevelopment.exe"
     IniWrite(serverName, "config.ini", "Settings", "server")
     IniWrite(channelName, "config.ini", "Settings", "channel")
+    IniWrite(discordExe, "config.ini", "Settings", "exe")
     MyGui.Destroy()
 }
 
@@ -107,7 +120,7 @@ F8:: {
 }
 
 IsInCorrectChannel() {
-    if not (WinExist("A") && (WinGetProcessName("A") == "DiscordDevelopment.exe"))
+    if not (WinExist("A") && (WinGetProcessName("A") == discordExe))
         return false
     currentTitle := WinGetTitle("A")
     return currentTitle == "#" channelName " | " serverName " - Discord"
@@ -135,7 +148,7 @@ IsInCorrectChannel() {
 
 SendFish(*) {
     global isBuying, isFishing, buyPending, pendingMode, isFishPaused
-    if not (WinExist("A") && (WinGetProcessName("A") == "DiscordDevelopment.exe"))
+    if not (WinExist("A") && (WinGetProcessName("A") == discordExe))
         return
     if isFishPaused
         return
@@ -184,8 +197,8 @@ StopAllTimers() {
 }
 
 SwitchToChannel(*) {
-    global serverName, channelName
-    WinActivate "ahk_exe DiscordDevelopment.exe"
+    global serverName, channelName, discordExe
+    WinActivate "ahk_exe " discordExe
     Sleep 500
     currentTitle := WinGetTitle("A")
     expected := "#" channelName " | " serverName " - Discord"
@@ -263,42 +276,8 @@ BuyExpensiveItems(force := false) {
     isBuying := false
 }
 
-BuyWorker10(force := false) {
-    global isBuying, isFishing, buyPending, pendingMode
-    if isBuying and not force
-        return
-    if isFishing {
-        Sleep 500
-        SendInput "{Enter}"
-        Sleep 100
-        SendInput "{Enter}"
-        buyPending := true
-        pendingMode := "worker10"
-        return
-    }
-    wasOnDiscord := WinExist("A") && (WinGetProcessName("A") == "DiscordDevelopment.exe")
-    switched := false
-    Loop {
-        if SwitchToChannel()
-            switched := true
-        Sleep 500
-        if IsInCorrectChannel()
-            break
-    }
-    SendInput "/buy auto10m"
-    Sleep 300
-    SendInput "{Enter}"
-    Sleep 300
-    SendInput "{Enter}"
-    Sleep 300
-    if not wasOnDiscord
-        SendInput "!{Tab}"
-    else if switched
-        SendInput "!{Left}"
-}
-
 BuyWorker30(force := false) {
-    global isBuying, isFishing, buyPending, pendingMode
+    global isBuying, isFishing, buyPending, pendingMode, discordExe
     if isBuying and not force
         return
     if isFishing {
@@ -310,7 +289,7 @@ BuyWorker30(force := false) {
         pendingMode := "worker30"
         return
     }
-    wasOnDiscord := WinExist("A") && (WinGetProcessName("A") == "DiscordDevelopment.exe")
+    wasOnDiscord := WinExist("A") && (WinGetProcessName("A") == discordExe)
     switched := false
     Loop {
         if SwitchToChannel()
@@ -320,6 +299,40 @@ BuyWorker30(force := false) {
             break
     }
     SendInput "/buy auto30m"
+    Sleep 300
+    SendInput "{Enter}"
+    Sleep 300
+    SendInput "{Enter}"
+    Sleep 300
+    if not wasOnDiscord
+        SendInput "!{Tab}"
+    else if switched
+        SendInput "!{Left}"
+}
+
+BuyWorker10(force := false) {
+    global isBuying, isFishing, buyPending, pendingMode, discordExe
+    if isBuying and not force
+        return
+    if isFishing {
+        Sleep 500
+        SendInput "{Enter}"
+        Sleep 100
+        SendInput "{Enter}"
+        buyPending := true
+        pendingMode := "worker10"
+        return
+    }
+    wasOnDiscord := WinExist("A") && (WinGetProcessName("A") == discordExe)
+    switched := false
+    Loop {
+        if SwitchToChannel()
+            switched := true
+        Sleep 500
+        if IsInCorrectChannel()
+            break
+    }
+    SendInput "/buy auto10m"
     Sleep 300
     SendInput "{Enter}"
     Sleep 300
