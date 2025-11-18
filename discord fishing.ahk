@@ -13,6 +13,9 @@ MyGui.Add("Text",, "Server Name:")
 ServerEdit := MyGui.Add("Edit", "w400", serverName)
 MyGui.Add("Text",, "Channel Name:")
 ChannelEdit := MyGui.Add("Edit", "w400", channelName)
+MyGui.Add("Text",, "Channel ID:")
+ChannelIDEdit := MyGui.Add("Edit", "w400", channelID)
+MyGui.Add("Text",, "Tip: Enable Developer Mode in Discord (Settings > Advanced), right-click the channel, and select 'Copy ID'.")
 MyGui.Add("Text",, "Discord Executable:")
 Radio1 := MyGui.Add("Radio", "vExeChoice", "Discord (x86 or x64)")
 Radio2 := MyGui.Add("Radio",, "Discord Development (ARM64)")
@@ -26,15 +29,17 @@ MyGui.Show("w1280 h720")
 WinWaitClose("ahk_id " MyGui.Hwnd)
 
 RunScript() {
-    global serverName, channelName, discordExe
+    global serverName, channelName, channelID, discordExe
     serverName := ServerEdit.Value
     channelName := ChannelEdit.Value
+    channelID := ChannelIDEdit.Value
     if Radio1.Value
         discordExe := "Discord.exe"
     else
         discordExe := "DiscordDevelopment.exe"
     IniWrite(serverName, "config.ini", "Settings", "server")
     IniWrite(channelName, "config.ini", "Settings", "channel")
+    IniWrite(channelID, "config.ini", "Settings", "channelID")
     IniWrite(discordExe, "config.ini", "Settings", "exe")
     MyGui.Destroy()
 }
@@ -145,12 +150,15 @@ IsInCorrectChannel() {
 }
 
 Esc:: {
-    global serverName, channelName, discordExe, ServerEdit, ChannelEdit, Radio1, Radio2, MyGui
+    global serverName, channelName, channelID, discordExe, ServerEdit, ChannelEdit, ChannelIDEdit, Radio1, Radio2, MyGui
     MyGui := Gui()
     MyGui.Add("Text",, "Server Name:")
     ServerEdit := MyGui.Add("Edit", "w400", serverName)
     MyGui.Add("Text",, "Channel Name:")
     ChannelEdit := MyGui.Add("Edit", "w400", channelName)
+    MyGui.Add("Text",, "Channel ID:")
+    ChannelIDEdit := MyGui.Add("Edit", "w400", channelID)
+    MyGui.Add("Text",, "Tip: Enable Developer Mode in Discord (Settings > Advanced), right-click the channel, and select 'Copy ID'.")
     MyGui.Add("Text",, "Discord Executable:")
     Radio1 := MyGui.Add("Radio", "vExeChoice", "Discord (x86 or x64)")
     Radio2 := MyGui.Add("Radio",, "Discord Development (ARM64)")
@@ -218,7 +226,7 @@ StopAllTimers() {
 }
 
 SwitchToChannel(*) {
-    global serverName, channelName, discordExe
+    global serverName, channelName, channelID, discordExe
     WinActivate "ahk_exe " discordExe
     Sleep 500
     currentTitle := WinGetTitle("A")
@@ -226,7 +234,7 @@ SwitchToChannel(*) {
     if currentTitle != expected {
         SendInput "^k"
         Sleep 300
-        SendInput serverName " " channelName
+        SendInput "#" channelID
         Sleep 300
         SendInput "{Enter}"
         Sleep 500
@@ -376,15 +384,17 @@ BuyWorker10(force := false) {
 F1::ExitApp
 
 UpdateSettings() {
-    global serverName, channelName, discordExe, ServerEdit, ChannelEdit, Radio1, Radio2, MyGui
+    global serverName, channelName, channelID, discordExe, ServerEdit, ChannelEdit, ChannelIDEdit, Radio1, Radio2, MyGui
     serverName := ServerEdit.Value
     channelName := ChannelEdit.Value
+    channelID := ChannelIDEdit.Value
     if Radio1.Value
         discordExe := "Discord.exe"
     else
         discordExe := "DiscordDevelopment.exe"
     IniWrite(serverName, "config.ini", "Settings", "server")
     IniWrite(channelName, "config.ini", "Settings", "channel")
+    IniWrite(channelID, "config.ini", "Settings", "channelID")
     IniWrite(discordExe, "config.ini", "Settings", "exe")
     MyGui.Destroy()
     ToolTip "Settings Updated"
