@@ -42,12 +42,5 @@ An AutoHotkey v2 script for automating the `/fish` command in Discord, with feat
 - Default interval: 3300ms (3.3 seconds). Adjustable with `=` and `-`.
 - Config is saved in `config.ini`; edit manually if needed.
 
-## Compiling to Executable
-Use Ahk2Exe from AutoHotkey v2:
-```
-"C:\Program Files\AutoHotkey\v2\Compiler\Ahk2Exe.exe" /in "discord fishing.ahk" /out "discord fishing.exe"
-```
-The exe runs standalone on any Windows PC.
-
 ## Disclaimer
 Use responsibly. Automating Discord commands may violate server rules—check with your community. This script is for educational purposes.
