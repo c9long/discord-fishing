@@ -4,17 +4,29 @@
 ; Auto /fish sender for AutoHotkey v2
 ; Toggle on/off with F8. Exit with Esc.
 
+serverName := IniRead("config.ini", "Settings", "server", "Coruscant")
+channelName := IniRead("config.ini", "Settings", "channel", "bots")
+
+MyGui := Gui()
+MyGui.Add("Text",, "Server Name:")
+ServerEdit := MyGui.Add("Edit",, serverName)
+MyGui.Add("Text",, "Channel Name:")
+ChannelEdit := MyGui.Add("Edit",, channelName)
+RunBtn := MyGui.Add("Button",, "Run Script")
+RunBtn.OnEvent("Click", (*) => RunScript())
+MyGui.Show()
+WinWaitClose("ahk_id " MyGui.Hwnd)
+
+RunScript() {
+    global serverName, channelName
+    serverName := ServerEdit.Value
+    channelName := ChannelEdit.Value
+    IniWrite(serverName, "config.ini", "Settings", "server")
+    IniWrite(channelName, "config.ini", "Settings", "channel")
+    MyGui.Destroy()
+}
+
 interval := 3300 ; milliseconds
-running := false
-isBuying := false
-isFishing := false
-buyPending := false
-pendingMode := ""
-isFishPaused := false
-buyItemPending := false
-buyExpensivePending := false
-serverName := "Coruscant"  ; Replace with your server name
-channelName := "bots"     ; Replace with your channel name (without #)
 
 F2:: {
     global isFishPaused, interval, running, buyItemPending, buyExpensivePending
