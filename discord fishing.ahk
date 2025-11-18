@@ -235,7 +235,7 @@ SwitchToChannel(*) {
     if currentTitle != expected {
         SendInput "^k"
         Sleep 300
-        SendInput "#" channelID
+        SendText "#" channelID
         Sleep 300
         SendInput "{Enter}"
         Sleep 500
