@@ -121,6 +121,8 @@ SendFish(*) {
         return
     if isBuying
         return
+    if not IsInCorrectChannel()
+        return
     isFishing := true
 
     ; Send the command, pause ~1 second, then press Enter twice
@@ -288,8 +290,12 @@ BuyWorker10(*) {
         return
     }
     wasOnDiscord := WinExist("A") && (WinGetProcessName("A") == "DiscordDevelopment.exe")
-    SwitchToChannel()
-    Sleep 500
+    Loop {
+        SwitchToChannel()
+        Sleep 500
+        if IsInCorrectChannel()
+            break
+    }
     SendInput "/buy auto10m"
     Sleep 300
     SendInput "{Enter}"
@@ -314,8 +320,12 @@ BuyWorker30(*) {
         return
     }
     wasOnDiscord := WinExist("A") && (WinGetProcessName("A") == "DiscordDevelopment.exe")
-    SwitchToChannel()
-    Sleep 500
+    Loop {
+        SwitchToChannel()
+        Sleep 500
+        if IsInCorrectChannel()
+            break
+    }
     SendInput "/buy auto30m"
     Sleep 300
     SendInput "{Enter}"
