@@ -4,15 +4,15 @@
 ; Auto /fish sender for AutoHotkey v2
 ; Toggle on/off with F8. Exit with Esc.
 
-serverName := IniRead("config.ini", "Settings", "server", "Coruscant")
-channelName := IniRead("config.ini", "Settings", "channel", "bots")
+serverName := IniRead("config.ini", "Settings", "server", "YourServerName")
+channelName := IniRead("config.ini", "Settings", "channel", "YourSpamChannelName")
 discordExe := IniRead("config.ini", "Settings", "exe", "Discord.exe")
 
 MyGui := Gui()
 MyGui.Add("Text",, "Server Name:")
-ServerEdit := MyGui.Add("Edit",, serverName)
+ServerEdit := MyGui.Add("Edit", "w400", serverName)
 MyGui.Add("Text",, "Channel Name:")
-ChannelEdit := MyGui.Add("Edit",, channelName)
+ChannelEdit := MyGui.Add("Edit", "w400", channelName)
 MyGui.Add("Text",, "Discord Executable:")
 Radio1 := MyGui.Add("Radio", "vExeChoice", "Discord (x86 or x64)")
 Radio2 := MyGui.Add("Radio",, "Discord Development (ARM64)")
@@ -22,7 +22,7 @@ else
     Radio2.Value := 1
 RunBtn := MyGui.Add("Button",, "Run Script")
 RunBtn.OnEvent("Click", (*) => RunScript())
-MyGui.Show()
+MyGui.Show("w1280 h720")
 WinWaitClose("ahk_id " MyGui.Hwnd)
 
 RunScript() {
@@ -144,6 +144,25 @@ IsInCorrectChannel() {
     SetTimer(RemoveToolTip, 1200)
 }
 
+Esc:: {
+    global serverName, channelName, discordExe, ServerEdit, ChannelEdit, Radio1, Radio2, MyGui
+    MyGui := Gui()
+    MyGui.Add("Text",, "Server Name:")
+    ServerEdit := MyGui.Add("Edit", "w400", serverName)
+    MyGui.Add("Text",, "Channel Name:")
+    ChannelEdit := MyGui.Add("Edit", "w400", channelName)
+    MyGui.Add("Text",, "Discord Executable:")
+    Radio1 := MyGui.Add("Radio", "vExeChoice", "Discord (x86 or x64)")
+    Radio2 := MyGui.Add("Radio",, "Discord Development (ARM64)")
+    if discordExe == "Discord.exe"
+        Radio1.Value := 1
+    else
+        Radio2.Value := 1
+    RunBtn := MyGui.Add("Button",, "Update Settings")
+    RunBtn.OnEvent("Click", (*) => UpdateSettings())
+    MyGui.Show("w1280 h720")
+}
+
 #HotIf
 
 SendFish(*) {
@@ -159,6 +178,8 @@ SendFish(*) {
     isFishing := true
 
     ; Send the command, pause ~1 second, then press Enter twice
+    if IsInCorrectChannel()
+        SendInput "^a"
     SendInput "/fish"
     Sleep 500
     SendInput "{Enter}"
@@ -234,6 +255,8 @@ BuyItems(force := false) {
     isBuying := true
     SwitchToChannel()
     Sleep 500
+    if IsInCorrectChannel()
+        SendInput "^a"
     SendInput "/buy fish5m"
     Sleep 300
     SendInput "{Enter}"
@@ -265,6 +288,8 @@ BuyExpensiveItems(force := false) {
     isBuying := true
     SwitchToChannel()
     Sleep 500
+    if IsInCorrectChannel()
+        SendInput "^a"
     SendInput "/buy fish20m"
     Sleep 300
     SendInput "{Enter}"
@@ -298,6 +323,8 @@ BuyWorker30(force := false) {
         if IsInCorrectChannel()
             break
     }
+    if IsInCorrectChannel()
+        SendInput "^a"
     SendInput "/buy auto30m"
     Sleep 300
     SendInput "{Enter}"
@@ -332,6 +359,8 @@ BuyWorker10(force := false) {
         if IsInCorrectChannel()
             break
     }
+    if IsInCorrectChannel()
+        SendInput "^a"
     SendInput "/buy auto10m"
     Sleep 300
     SendInput "{Enter}"
@@ -345,5 +374,21 @@ BuyWorker10(force := false) {
 }
 
 F1::ExitApp
+
+UpdateSettings() {
+    global serverName, channelName, discordExe, ServerEdit, ChannelEdit, Radio1, Radio2, MyGui
+    serverName := ServerEdit.Value
+    channelName := ChannelEdit.Value
+    if Radio1.Value
+        discordExe := "Discord.exe"
+    else
+        discordExe := "DiscordDevelopment.exe"
+    IniWrite(serverName, "config.ini", "Settings", "server")
+    IniWrite(channelName, "config.ini", "Settings", "channel")
+    IniWrite(discordExe, "config.ini", "Settings", "exe")
+    MyGui.Destroy()
+    ToolTip "Settings Updated"
+    SetTimer(RemoveToolTip, 1200)
+}
 
 ; End of script
