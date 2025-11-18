@@ -27,6 +27,14 @@ RunScript() {
 }
 
 interval := 3300 ; milliseconds
+running := false
+isBuying := false
+isFishing := false
+buyPending := false
+pendingMode := ""
+isFishPaused := false
+buyItemPending := false
+buyExpensivePending := false
 
 F2:: {
     global isFishPaused, interval, running, buyItemPending, buyExpensivePending
@@ -148,53 +156,17 @@ SendFish(*) {
         buyPending := false
         mode := pendingMode
         pendingMode := ""
-        isBuying := true
         if mode == "normal" {
-            SwitchToChannel()
-            Sleep 500
-            SendInput "/buy fish5m"
-            Sleep 300
-            SendInput "{Enter}"
-            Sleep 800
-            SendInput "/buy treasure5m"
-            Sleep 300
-            SendInput "{Enter}"
+            BuyItems(true)
         } else if mode == "expensive" {
-            SwitchToChannel()
-            Sleep 500
-            SendInput "/buy fish20m"
-            Sleep 300
-            SendInput "{Enter}"
-            Sleep 800
-            SendInput "/buy treasure20m"
-            Sleep 300
-            SendInput "{Enter}"
+            BuyExpensiveItems(true)
         } else if mode == "worker10" {
-            wasOnDiscord := WinExist("A") && (WinGetProcessName("A") == "DiscordDevelopment.exe")
-            SwitchToChannel()
-            Sleep 500
-            SendInput "/buy auto10m"
-            Sleep 300
-            SendInput "{Enter}"
-            Sleep 300
-            SendInput "{Enter}"
-            if not wasOnDiscord
-                SendInput "!{Tab}"
+            BuyWorker10(true)
             SetTimer(BuyWorker10, 605000)
         } else if mode == "worker30" {
-            wasOnDiscord := WinExist("A") && (WinGetProcessName("A") == "DiscordDevelopment.exe")
-            SwitchToChannel()
-            Sleep 500
-            SendInput "/buy auto30m"
-            Sleep 300
-            SendInput "{Enter}"
-            Sleep 300
-            SendInput "{Enter}"
-            if not wasOnDiscord
-                SendInput "!{Tab}"
+            BuyWorker30(true)
             SetTimer(BuyWorker30, 1805000)
         }
-        isBuying := false
     }
 }
 
@@ -216,23 +188,26 @@ SwitchToChannel(*) {
     WinActivate "ahk_exe DiscordDevelopment.exe"
     Sleep 500
     currentTitle := WinGetTitle("A")
-    if currentTitle != "#" channelName " | " serverName " - Discord" {
+    expected := "#" channelName " | " serverName " - Discord"
+    if currentTitle != expected {
         SendInput "^k"
         Sleep 300
         SendInput serverName " " channelName
         Sleep 300
         SendInput "{Enter}"
         Sleep 500
+        return true
     }
+    return false
 }
 
-BuyItems(*) {
+BuyItems(force := false) {
     global isBuying, isFishing, buyPending, pendingMode, isFishPaused, buyItemPending
     if isFishPaused {
         buyItemPending := true
         return
     }
-    if isBuying
+    if isBuying and not force
         return
     if isFishing {
         Sleep 500
@@ -257,13 +232,13 @@ BuyItems(*) {
     isBuying := false
 }
 
-BuyExpensiveItems(*) {
+BuyExpensiveItems(force := false) {
     global isBuying, isFishing, buyPending, pendingMode, isFishPaused, buyExpensivePending
     if isFishPaused {
         buyExpensivePending := true
         return
     }
-    if isBuying
+    if isBuying and not force
         return
     if isFishing {
         Sleep 500
@@ -288,9 +263,9 @@ BuyExpensiveItems(*) {
     isBuying := false
 }
 
-BuyWorker10(*) {
+BuyWorker10(force := false) {
     global isBuying, isFishing, buyPending, pendingMode
-    if isBuying
+    if isBuying and not force
         return
     if isFishing {
         Sleep 500
@@ -302,8 +277,10 @@ BuyWorker10(*) {
         return
     }
     wasOnDiscord := WinExist("A") && (WinGetProcessName("A") == "DiscordDevelopment.exe")
+    switched := false
     Loop {
-        SwitchToChannel()
+        if SwitchToChannel()
+            switched := true
         Sleep 500
         if IsInCorrectChannel()
             break
@@ -316,11 +293,13 @@ BuyWorker10(*) {
     Sleep 300
     if not wasOnDiscord
         SendInput "!{Tab}"
+    else if switched
+        SendInput "!{Left}"
 }
 
-BuyWorker30(*) {
+BuyWorker30(force := false) {
     global isBuying, isFishing, buyPending, pendingMode
-    if isBuying
+    if isBuying and not force
         return
     if isFishing {
         Sleep 500
@@ -332,8 +311,10 @@ BuyWorker30(*) {
         return
     }
     wasOnDiscord := WinExist("A") && (WinGetProcessName("A") == "DiscordDevelopment.exe")
+    switched := false
     Loop {
-        SwitchToChannel()
+        if SwitchToChannel()
+            switched := true
         Sleep 500
         if IsInCorrectChannel()
             break
@@ -346,6 +327,8 @@ BuyWorker30(*) {
     Sleep 300
     if not wasOnDiscord
         SendInput "!{Tab}"
+    else if switched
+        SendInput "!{Left}"
 }
 
 F1::ExitApp
