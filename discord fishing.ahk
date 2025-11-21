@@ -54,9 +54,13 @@ pendingMode := ""
 isFishPaused := false
 buyItemPending := false
 buyExpensivePending := false
+itemTimerActive := false
+workerTimerActive := false
+nextItemTime := 0
+nextWorkerTime := 0
 
 F2:: {
-    global isFishPaused, interval, running, buyItemPending, buyExpensivePending
+    global isFishPaused, interval, running, buyItemPending, buyExpensivePending, nextItemTime
     isFishPaused := !isFishPaused
     if isFishPaused {
         SetTimer(SendFish, 0)
@@ -67,11 +71,13 @@ F2:: {
             buyItemPending := false
             BuyItems()
             SetTimer(BuyItems, 305000)
+            nextItemTime := A_TickCount + 305000
         }
         if buyExpensivePending {
             buyExpensivePending := false
             BuyExpensiveItems()
             SetTimer(BuyExpensiveItems, 1205000)
+            nextItemTime := A_TickCount + 1205000
         }
     }
     ToolTip isFishPaused ? "Fishing Paused" : "Fishing Resumed"
@@ -79,35 +85,59 @@ F2:: {
 }
 
 F6:: {
+    global nextWorkerTime
     BuyWorker10()
     SetTimer(BuyWorker30, 0)
     SetTimer(BuyWorker10, 605000)
+    workerTimerActive := true
+    nextWorkerTime := A_TickCount + 605000
     ToolTip "Worker10 Purchased"
     SetTimer(RemoveToolTip, 1200)
 }
 
 ^F6:: {
-    BuyItems()
-    SetTimer(BuyExpensiveItems, 0)
-    SetTimer(BuyItems, 305000)
-    ToolTip "Items Purchased (Ctrl+F6)"
-    SetTimer(RemoveToolTip, 1200)
+    global running, nextItemTime
+    if running {
+        BuyItems()
+        SetTimer(BuyItems, 0)
+        SetTimer(BuyExpensiveItems, 0)
+        SetTimer(BuyItems, 305000)
+        itemTimerActive := true
+        nextItemTime := A_TickCount + 305000
+        ToolTip "Items Purchased (Ctrl+F6)"
+        SetTimer(RemoveToolTip, 1200)
+    } else {
+        ToolTip "Cannot purchase items while not running"
+        SetTimer(RemoveToolTip, 1200)
+    }
 }
 
 F7:: {
+    global nextWorkerTime
     BuyWorker30()
     SetTimer(BuyWorker10, 0)
     SetTimer(BuyWorker30, 1805000)
+    workerTimerActive := true
+    nextWorkerTime := A_TickCount + 1805000
     ToolTip "Worker30 Purchased"
     SetTimer(RemoveToolTip, 1200)
 }
 
 ^F7:: {
-    BuyExpensiveItems()
-    SetTimer(BuyItems, 0)
-    SetTimer(BuyExpensiveItems, 1205000)
-    ToolTip "Expensive Items Purchased (Ctrl+F7)"
-    SetTimer(RemoveToolTip, 1200)
+    global running, nextItemTime
+    if running {
+        BuyExpensiveItems()
+        SetTimer(BuyItems, 0)
+        SetTimer(BuyExpensiveItems, 0)
+        SetTimer(BuyExpensiveItems, 1205000)
+        itemTimerActive := true
+        nextItemTime := A_TickCount + 1205000
+        ToolTip "Expensive Items Purchased (Ctrl+F7)"
+        SetTimer(RemoveToolTip, 1200)
+    } else {
+        ToolTip "Cannot purchase items while not running"
+        SetTimer(RemoveToolTip, 1200)
+    }
 }
 
 F8:: {
@@ -172,6 +202,26 @@ Esc:: {
     MyGui.Show("w1280 h720")
 }
 
+^Esc:: {
+    global running, isFishPaused, buyItemPending, buyExpensivePending, nextItemTime, nextWorkerTime
+    status := "Status:`n"
+    status .= "Auto /fish: " (running ? "ON" : "OFF") "`n"
+    status .= "Fishing Paused: " (isFishPaused ? "YES" : "NO") "`n"
+    currentTime := A_TickCount
+    if buyItemPending or buyExpensivePending {
+        nextItem := "Pending"
+    } else {
+        itemRemaining := nextItemTime > currentTime ? Ceil((nextItemTime - currentTime) / 1000) : 0
+        nextItem := itemRemaining > 0 ? itemRemaining "s" : "undefined"
+    }
+    status .= "Next Item Purchase: " nextItem "`n"
+    workerRemaining := nextWorkerTime > currentTime ? Ceil((nextWorkerTime - currentTime) / 1000) : 0
+    nextWorker := workerRemaining > 0 ? workerRemaining "s" : "undefined"
+    status .= "Next Worker Purchase: " nextWorker
+    ToolTip status
+    SetTimer(RemoveToolTip, 3000)
+}
+
 #HotIf
 
 SendFish(*) {
@@ -194,7 +244,6 @@ SendFish(*) {
     SendInput "{Enter}"
     Sleep 300
     SendInput "{Enter}"
-    SetTimer(SendFish, interval)
     isFishing := false
     if buyPending {
         buyPending := false
@@ -207,9 +256,13 @@ SendFish(*) {
         } else if mode == "worker10" {
             BuyWorker10(true)
             SetTimer(BuyWorker10, 605000)
+            workerTimerActive := true
+            nextWorkerTime := A_TickCount + 605000
         } else if mode == "worker30" {
             BuyWorker30(true)
             SetTimer(BuyWorker30, 1805000)
+            workerTimerActive := true
+            nextWorkerTime := A_TickCount + 1805000
         }
     }
 }
@@ -225,6 +278,10 @@ StopAllTimers() {
     SetTimer(BuyExpensiveItems, 0)
     SetTimer(BuyWorker10, 0)
     SetTimer(BuyWorker30, 0)
+    itemTimerActive := false
+    workerTimerActive := false
+    nextItemTime := 0
+    nextWorkerTime := 0
 }
 
 SwitchToChannel(*) {
@@ -246,8 +303,12 @@ SwitchToChannel(*) {
 }
 
 BuyItems(force := false) {
-    global isBuying, isFishing, buyPending, pendingMode, isFishPaused, buyItemPending
+    global isBuying, isFishing, buyPending, pendingMode, isFishPaused, running, buyItemPending, nextItemTime
+    if not running
+        return
     if isFishPaused {
+        if force
+            return
         buyItemPending := true
         return
     }
@@ -276,11 +337,19 @@ BuyItems(force := false) {
     SendInput "{Enter}"
     Sleep 800
     isBuying := false
+    if not force {
+        SetTimer(BuyItems, 305000)
+        nextItemTime := A_TickCount + 305000
+    }
 }
 
 BuyExpensiveItems(force := false) {
-    global isBuying, isFishing, buyPending, pendingMode, isFishPaused, buyExpensivePending
+    global isBuying, isFishing, buyPending, pendingMode, isFishPaused, running, buyExpensivePending, nextItemTime
+    if not running
+        return
     if isFishPaused {
+        if force
+            return
         buyExpensivePending := true
         return
     }
@@ -309,10 +378,14 @@ BuyExpensiveItems(force := false) {
     SendInput "{Enter}"
     Sleep 800
     isBuying := false
+    if not force {
+        SetTimer(BuyExpensiveItems, 1205000)
+        nextItemTime := A_TickCount + 1205000
+    }
 }
 
 BuyWorker30(force := false) {
-    global isBuying, isFishing, buyPending, pendingMode, discordExe
+    global isBuying, isFishing, buyPending, pendingMode, discordExe, nextWorkerTime
     if isBuying and not force
         return
     if isFishing {
@@ -345,10 +418,14 @@ BuyWorker30(force := false) {
         SendInput "!{Tab}"
     else if switched
         SendInput "!{Left}"
+    if not force {
+        SetTimer(BuyWorker30, 1805000)
+        nextWorkerTime := A_TickCount + 1805000
+    }
 }
 
 BuyWorker10(force := false) {
-    global isBuying, isFishing, buyPending, pendingMode, discordExe
+    global isBuying, isFishing, buyPending, pendingMode, discordExe, nextWorkerTime
     if isBuying and not force
         return
     if isFishing {
@@ -381,6 +458,10 @@ BuyWorker10(force := false) {
         SendInput "!{Tab}"
     else if switched
         SendInput "!{Left}"
+    if not force {
+        SetTimer(BuyWorker10, 605000)
+        nextWorkerTime := A_TickCount + 605000
+    }
 }
 
 F1::ExitApp
