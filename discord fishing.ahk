@@ -194,6 +194,7 @@ SendFish(*) {
     SendInput "{Enter}"
     Sleep 300
     SendInput "{Enter}"
+    SetTimer(SendFish, interval)
     isFishing := false
     if buyPending {
         buyPending := false
