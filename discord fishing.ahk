@@ -225,7 +225,7 @@ Esc:: {
 #HotIf
 
 SendFish(*) {
-    global isBuying, isFishing, buyPending, pendingMode, isFishPaused
+    global isBuying, isFishing, buyPending, pendingMode, isFishPaused, interval
     if not (WinExist("A") && (WinGetProcessName("A") == discordExe))
         return
     if isFishPaused
@@ -244,6 +244,7 @@ SendFish(*) {
     SendInput "{Enter}"
     Sleep 300
     SendInput "{Enter}"
+    SetTimer(SendFish, interval)
     isFishing := false
     if buyPending {
         buyPending := false
@@ -280,6 +281,8 @@ StopAllTimers() {
     SetTimer(BuyWorker30, 0)
     itemTimerActive := false
     workerTimerActive := false
+    buyItemPending := false
+    buyExpensivePending := false
     nextItemTime := 0
     nextWorkerTime := 0
 }
