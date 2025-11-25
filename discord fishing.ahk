@@ -459,8 +459,6 @@ BuyWorker10(force := false) {
     nextWorkerTime := A_TickCount + 605000
 }
 
-F1::ExitApp
-
 UpdateSettings() {
     global serverName, channelName, channelID, discordExe, ServerEdit, ChannelEdit, ChannelIDEdit, Radio1, Radio2, MyGui
     serverName := ServerEdit.Value
