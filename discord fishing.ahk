@@ -85,7 +85,7 @@ F2:: {
 }
 
 F6:: {
-    global nextWorkerTime
+    global nextWorkerTime, workerTimerActive
     BuyWorker10()
     SetTimer(BuyWorker30, 0)
     SetTimer(BuyWorker10, 605000)
@@ -96,7 +96,7 @@ F6:: {
 }
 
 ^F6:: {
-    global running, nextItemTime
+    global running, nextItemTime, itemTimerActive
     if running {
         BuyItems()
         SetTimer(BuyItems, 0)
@@ -113,7 +113,7 @@ F6:: {
 }
 
 F7:: {
-    global nextWorkerTime
+    global nextWorkerTime, workerTimerActive
     BuyWorker30()
     SetTimer(BuyWorker10, 0)
     SetTimer(BuyWorker30, 1805000)
@@ -124,7 +124,7 @@ F7:: {
 }
 
 ^F7:: {
-    global running, nextItemTime
+    global running, nextItemTime, itemTimerActive
     if running {
         BuyExpensiveItems()
         SetTimer(BuyItems, 0)
@@ -203,20 +203,26 @@ Esc:: {
 }
 
 ^Esc:: {
-    global running, isFishPaused, buyItemPending, buyExpensivePending, nextItemTime, nextWorkerTime
+    global running, isFishPaused, buyItemPending, buyExpensivePending, nextItemTime, nextWorkerTime, itemTimerActive, workerTimerActive
     status := "Status:`n"
     status .= "Auto /fish: " (running ? "ON" : "OFF") "`n"
     status .= "Fishing Paused: " (isFishPaused ? "YES" : "NO") "`n"
     currentTime := A_TickCount
     if buyItemPending or buyExpensivePending {
         nextItem := "Pending"
-    } else {
+    } else if itemTimerActive {
         itemRemaining := nextItemTime > currentTime ? Ceil((nextItemTime - currentTime) / 1000) : 0
-        nextItem := itemRemaining > 0 ? itemRemaining "s" : "undefined"
+        nextItem := itemRemaining "s"
+    } else {
+        nextItem := "undefined"
     }
     status .= "Next Item Purchase: " nextItem "`n"
-    workerRemaining := nextWorkerTime > currentTime ? Ceil((nextWorkerTime - currentTime) / 1000) : 0
-    nextWorker := workerRemaining > 0 ? workerRemaining "s" : "undefined"
+    if workerTimerActive {
+        workerRemaining := nextWorkerTime > currentTime ? Ceil((nextWorkerTime - currentTime) / 1000) : 0
+        nextWorker := workerRemaining "s"
+    } else {
+        nextWorker := "undefined"
+    }
     status .= "Next Worker Purchase: " nextWorker
     ToolTip status
     SetTimer(RemoveToolTip, 3000)
