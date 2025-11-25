@@ -262,14 +262,8 @@ SendFish(*) {
             BuyExpensiveItems(true)
         } else if mode == "worker10" {
             BuyWorker10(true)
-            SetTimer(BuyWorker10, 605000)
-            workerTimerActive := true
-            nextWorkerTime := A_TickCount + 605000
         } else if mode == "worker30" {
             BuyWorker30(true)
-            SetTimer(BuyWorker30, 1805000)
-            workerTimerActive := true
-            nextWorkerTime := A_TickCount + 1805000
         }
     }
 }
@@ -346,10 +340,8 @@ BuyItems(force := false) {
     SendInput "{Enter}"
     Sleep 800
     isBuying := false
-    if not force {
-        SetTimer(BuyItems, 305000)
-        nextItemTime := A_TickCount + 305000
-    }
+    SetTimer(BuyItems, 305000)
+    nextItemTime := A_TickCount + 305000
 }
 
 BuyExpensiveItems(force := false) {
@@ -387,10 +379,8 @@ BuyExpensiveItems(force := false) {
     SendInput "{Enter}"
     Sleep 800
     isBuying := false
-    if not force {
-        SetTimer(BuyExpensiveItems, 1205000)
-        nextItemTime := A_TickCount + 1205000
-    }
+    SetTimer(BuyExpensiveItems, 1205000)
+    nextItemTime := A_TickCount + 1205000
 }
 
 BuyWorker30(force := false) {
@@ -427,10 +417,8 @@ BuyWorker30(force := false) {
         SendInput "!{Tab}"
     else if switched
         SendInput "!{Left}"
-    if not force {
-        SetTimer(BuyWorker30, 1805000)
-        nextWorkerTime := A_TickCount + 1805000
-    }
+    SetTimer(BuyWorker30, 1805000)
+    nextWorkerTime := A_TickCount + 1805000
 }
 
 BuyWorker10(force := false) {
@@ -467,10 +455,8 @@ BuyWorker10(force := false) {
         SendInput "!{Tab}"
     else if switched
         SendInput "!{Left}"
-    if not force {
-        SetTimer(BuyWorker10, 605000)
-        nextWorkerTime := A_TickCount + 605000
-    }
+    SetTimer(BuyWorker10, 605000)
+    nextWorkerTime := A_TickCount + 605000
 }
 
 F1::ExitApp
