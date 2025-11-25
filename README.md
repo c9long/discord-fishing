@@ -17,7 +17,7 @@ An AutoHotkey v2 script for automating the `/fish` command in Discord, with feat
    - To get the Channel ID: Enable Developer Mode in Discord (Settings > Advanced), right-click the channel, and select 'Copy ID'.
 
 ## Usage
-- Launch the script/exe.
+- Launch the exe.
 - In the GUI, enter your server name, channel name, and channel ID, then click "Run Script".
 - Switch to Discord and ensure you're in the specified channel.
 - Use the hotkeys below to control the bot.
