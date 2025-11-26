@@ -36,6 +36,7 @@ An AutoHotkey v2 script for automating the `/fish` command in Discord, with feat
 | `=` | Increase fishing interval by 100ms (only works in the correct server/channel). Shows tooltip with new interval. |
 | `-` | Decrease fishing interval by 100ms (minimum 100ms; only works in the correct server/channel). Shows tooltip with new interval. |
 | `Esc` | Open the settings GUI to update server name, channel name, channel ID, and Discord executable. |
+| `Ctrl+Esc` | Show current bot status via tooltip (Auto /fish on/off, fishing paused, next item/worker purchase times or "Pending"/"undefined"). |
 
 ## Notes
 - The script only sends commands when Discord is active and in the exact specified channel (based on window title).
