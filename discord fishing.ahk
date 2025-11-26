@@ -274,6 +274,7 @@ RemoveToolTip(*) {
 }
 
 StopAllTimers() {
+    global itemTimerActive, workerTimerActive, buyItemPending, buyExpensivePending, nextItemTime, nextWorkerTime
     SetTimer(SendFish, 0)
     SetTimer(BuyItems, 0)
     SetTimer(BuyExpensiveItems, 0)
