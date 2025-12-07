@@ -397,10 +397,10 @@ BuyWorker30(force := false) {
         pendingMode := "worker30"
         return
     }
-    wasOnDiscord := WinExist("A") && (WinGetProcessName("A") == discordExe)
+    originalWindowTitle := (WinExist("A") && (WinGetProcessName("A") == discordExe)) ? "" : WinGetTitle("A")
     switchedChannel := false
     Loop {
-        if wasOnDiscord {
+        if originalWindowTitle == "" {
             currentTitle := WinGetTitle("A")
             expected := "#" channelName " | " serverName " - Discord"
             if currentTitle != expected
@@ -424,8 +424,8 @@ BuyWorker30(force := false) {
         SendInput "!{Left}"
         Sleep 300
     }
-    if not wasOnDiscord
-        SendInput "!{Tab}"
+    if originalWindowTitle != ""
+        WinActivate originalWindowTitle
     SetTimer(BuyWorker30, 1805000)
     nextWorkerTime := A_TickCount + 1805000
 }
@@ -443,10 +443,10 @@ BuyWorker10(force := false) {
         pendingMode := "worker10"
         return
     }
-    wasOnDiscord := WinExist("A") && (WinGetProcessName("A") == discordExe)
+    originalWindowTitle := (WinExist("A") && (WinGetProcessName("A") == discordExe)) ? "" : WinGetTitle("A")
     switchedChannel := false
     Loop {
-        if wasOnDiscord {
+        if originalWindowTitle == "" {
             currentTitle := WinGetTitle("A")
             expected := "#" channelName " | " serverName " - Discord"
             if currentTitle != expected
@@ -470,8 +470,8 @@ BuyWorker10(force := false) {
         SendInput "!{Left}"
         Sleep 300
     }
-    if not wasOnDiscord
-        SendInput "!{Tab}"
+    if originalWindowTitle != ""
+        WinActivate originalWindowTitle
     SetTimer(BuyWorker10, 605000)
     nextWorkerTime := A_TickCount + 605000
 }
