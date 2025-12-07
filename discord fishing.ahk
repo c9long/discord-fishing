@@ -385,7 +385,7 @@ BuyExpensiveItems(force := false) {
 }
 
 BuyWorker30(force := false) {
-    global isBuying, isFishing, buyPending, pendingMode, discordExe, nextWorkerTime
+    global isBuying, isFishing, buyPending, pendingMode, discordExe, nextWorkerTime, serverName, channelName
     if isBuying and not force
         return
     if isFishing {
@@ -398,10 +398,16 @@ BuyWorker30(force := false) {
         return
     }
     wasOnDiscord := WinExist("A") && (WinGetProcessName("A") == discordExe)
-    switched := false
+    switchedChannel := false
     Loop {
+        if wasOnDiscord {
+            currentTitle := WinGetTitle("A")
+            expected := "#" channelName " | " serverName " - Discord"
+            if currentTitle != expected
+                switchedChannel := true
+        }
         if SwitchToChannel()
-            switched := true
+            switchedChannel := true
         Sleep 500
         if IsCorrectChannel()
             break
@@ -414,16 +420,18 @@ BuyWorker30(force := false) {
     Sleep 300
     SendInput "{Enter}"
     Sleep 300
+    if switchedChannel {
+        SendInput "!{Left}"
+        Sleep 300
+    }
     if not wasOnDiscord
         SendInput "!{Tab}"
-    else if switched
-        SendInput "!{Left}"
     SetTimer(BuyWorker30, 1805000)
     nextWorkerTime := A_TickCount + 1805000
 }
 
 BuyWorker10(force := false) {
-    global isBuying, isFishing, buyPending, pendingMode, discordExe, nextWorkerTime
+    global isBuying, isFishing, buyPending, pendingMode, discordExe, nextWorkerTime, serverName, channelName
     if isBuying and not force
         return
     if isFishing {
@@ -436,10 +444,16 @@ BuyWorker10(force := false) {
         return
     }
     wasOnDiscord := WinExist("A") && (WinGetProcessName("A") == discordExe)
-    switched := false
+    switchedChannel := false
     Loop {
+        if wasOnDiscord {
+            currentTitle := WinGetTitle("A")
+            expected := "#" channelName " | " serverName " - Discord"
+            if currentTitle != expected
+                switchedChannel := true
+        }
         if SwitchToChannel()
-            switched := true
+            switchedChannel := true
         Sleep 500
         if IsCorrectChannel()
             break
@@ -452,10 +466,12 @@ BuyWorker10(force := false) {
     Sleep 300
     SendInput "{Enter}"
     Sleep 300
+    if switchedChannel {
+        SendInput "!{Left}"
+        Sleep 300
+    }
     if not wasOnDiscord
         SendInput "!{Tab}"
-    else if switched
-        SendInput "!{Left}"
     SetTimer(BuyWorker10, 605000)
     nextWorkerTime := A_TickCount + 605000
 }
