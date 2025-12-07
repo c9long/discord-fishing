@@ -155,14 +155,14 @@ F8:: {
     SetTimer(RemoveToolTip, 1200)
 }
 
-IsInCorrectChannel() {
+IsCorrectChannel() {
     if not (WinExist("A") && (WinGetProcessName("A") == discordExe))
         return false
     currentTitle := WinGetTitle("A")
     return currentTitle == "#" channelName " | " serverName " - Discord"
 }
 
-#HotIf IsInCorrectChannel()
+#HotIf IsCorrectChannel()
 
 =:: {
     global interval
@@ -238,12 +238,12 @@ SendFish(*) {
         return
     if isBuying
         return
-    if not IsInCorrectChannel()
+    if not IsCorrectChannel()
         return
     isFishing := true
 
     ; Send the command, pause ~1 second, then press Enter twice
-    if IsInCorrectChannel()
+    if IsCorrectChannel()
         SendInput "^a"
     SendInput "/fish"
     Sleep 500
@@ -330,7 +330,7 @@ BuyItems(force := false) {
     isBuying := true
     SwitchToChannel()
     Sleep 500
-    if IsInCorrectChannel()
+    if IsCorrectChannel()
         SendInput "^a"
     SendInput "/buy fish5m"
     Sleep 300
@@ -369,7 +369,7 @@ BuyExpensiveItems(force := false) {
     isBuying := true
     SwitchToChannel()
     Sleep 500
-    if IsInCorrectChannel()
+    if IsCorrectChannel()
         SendInput "^a"
     SendInput "/buy fish20m"
     Sleep 300
@@ -403,10 +403,10 @@ BuyWorker30(force := false) {
         if SwitchToChannel()
             switched := true
         Sleep 500
-        if IsInCorrectChannel()
+        if IsCorrectChannel()
             break
     }
-    if IsInCorrectChannel()
+    if IsCorrectChannel()
         SendInput "^a"
     SendInput "/buy auto30m"
     Sleep 300
@@ -441,10 +441,10 @@ BuyWorker10(force := false) {
         if SwitchToChannel()
             switched := true
         Sleep 500
-        if IsInCorrectChannel()
+        if IsCorrectChannel()
             break
     }
-    if IsInCorrectChannel()
+    if IsCorrectChannel()
         SendInput "^a"
     SendInput "/buy auto10m"
     Sleep 300
